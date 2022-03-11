@@ -1,34 +1,35 @@
 # firmware_tools
 
-### Usage
-1. Run the script. (Make sure you read the script before curling it into bash!)
+This is just a Dockerfile for the [firmware-analysis-toolkit](https://github.com/attify/firmware-analysis-toolkit) which only seems to work on Ubuntu.
+
+## Building the Image and Running the Firmware
+1. Clone the repository
 ```
-curl https://raw.githubusercontent.com/sadeli413/firmware_tools/master/firmware_tools_installer.sh | bash
+$ git clone https://github.com/sadeli413/firmware_tools.git
+$ cd firmware_tools
 ```
-2. Make sure `firmware-analysis-toolkit/fat.config` is configured with your sudo password. For example:
+2. Build the image for the firmware-analysis-toolkit.
 ```
-[DEFAULT]
-sudo_password=myPassword123
-firmadyne_path=/home/user/firmware-analysis-toolkit/firmadyne
+$ docker build . -t fat
 ```
-3. Make sure sasquatch and binwalk have been installed.
+3. Download example firmware
 ```
-sasquatch -h
-binwalk -h
+$ wget https://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip
+```
+4. Run the image. In order for the networking to work, it needs to be run as privileged on the host.
+```
+$ docker run --privileged --rm -v $PWD:/work -w /work -it --net=host fat
+```
+5. When you're in the container, extract the firmware image.
+```
+# unzip WNAP320\ Firmware\ Version\ 2.0.3.zip
+# tar -xvf WNAP320_V2.0.3_firmware.tar
+# binwalk -e rootfs.squashfs --run-as=root
+```
+6. Run the firmware-analysis-toolkit
+```
+# cd /root/firmware-analysis-toolkit
+# ./fat.py /work/rootfs.squashfs
 ```
 
-### Description
-`firmware_tools_installer.sh` is just a simple no-brain script that installs a few firmware analysis tools. These tools are:
-- https://github.com/attify/firmware-analysis-toolkit
-- https://github.com/firmadyne/firmadyne
-- https://github.com/devttys0/sasquatch
-- https://github.com/ReFirmLabs/binwalk
-
-### Dependencies
-This script only works on GNU/Linux systems that are:
-- Debian based
-- Use GCC 10 by default (for Makefile)
-- bash
-
-### Example Vulnerable Firmware
-- https://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip
+It should give you an IP address (probably `192.168.0.100`) on a new interface (probably `tap1`)
