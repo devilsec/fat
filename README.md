@@ -1,12 +1,12 @@
-# firmware_tools
+# fat
 
 This is just a Dockerfile for the [firmware-analysis-toolkit](https://github.com/attify/firmware-analysis-toolkit) which only seems to work on Ubuntu.
 
 ## Building the Image and Running the Firmware
 1. Clone the repository
 ```
-$ git clone https://github.com/sadeli413/firmware_tools.git
-$ cd firmware_tools
+$ git clone https://github.com/sadeli413/fat.git
+$ cd fat 
 ```
 2. Build the image for the firmware-analysis-toolkit.
 ```
